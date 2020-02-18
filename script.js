@@ -1,0 +1,1 @@
+let value = document.getElementById('new-todo');

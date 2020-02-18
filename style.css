@@ -1,0 +1,26 @@
+body {
+    font-size: 18pt;
+    font-family: Tomaha, Verdana, Arial;
+}
+
+#main {
+    display: block;
+    margin: 12px;
+}
+
+a {
+    text-decoration: none; !important;
+}
+
+a.btn-common {
+    color: #c0c0c0;
+    margin-bottom: 12px;
+    display: inline-block;
+}
+
+#new-todo {
+    height: 32px;
+    line-height: 28px;
+    font-family: Tomaha, Verdana, Arial;
+    width: 240px;
+}
