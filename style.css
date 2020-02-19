@@ -24,3 +24,24 @@ a.btn-common {
     font-family: Tomaha, Verdana, Arial;
     width: 240px;
 }
+
+a.del {
+    display: inline-block;
+    width: 42px;
+    text-align: center;
+    margin-left: -120px;
+    color: #ccc;
+}
+
+li.task {
+    cursor: default;
+    margin-left: 80px;
+}
+
+li.task span {
+    margin-left: 64px;
+}
+
+li.task span.ready {
+    text-decoration: line-through;
+}
