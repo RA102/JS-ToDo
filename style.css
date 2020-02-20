@@ -45,3 +45,9 @@ li.task span {
 li.task span.ready {
     text-decoration: line-through;
 }
+
+#list-ready li.task {
+    list-style-type: none;
+    opacity: 0.5;
+    color: Gray;
+}
