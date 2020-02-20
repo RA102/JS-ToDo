@@ -6,10 +6,18 @@ window.onload = function(event) {
     let ol = document.getElementById('list-not-ready');
     let ul = document.getElementById('list-ready');
 
-
+    // Список не законченых дел
     let listNotReady = localStorage.getItem('list-not-ready') ? JSON.parse(localStorage.getItem('list-not-ready')) : [];
     localStorage.setItem('list-not-ready', JSON.stringify(listNotReady));
     let dataNotReady = JSON.parse(localStorage.getItem('list-not-ready'));
+
+
+
+    // Список законченых дел
+    let listReady = localStorage.getItem('list-ready') ? JSON.parse(localStorage.getItem('list-ready')) : [];
+    localStorage.setItem('list-ready', JSON.stringify(listReady));
+    let dataReady = JSON.parse(localStorage.getItem('list-ready'));
+
 
     function createRow (value)
     {
@@ -30,6 +38,17 @@ window.onload = function(event) {
         li.append(span);
         ol.appendChild(li);
     };
+
+    // function doneDeal (event) {
+    //
+    // }
+
+    function idDeal()
+    {
+        return Math.random().toString(36).substr(2,16);
+    }
+
+    console.log(idDeal());
 
     enter.addEventListener('click', event => {
         event.preventDefault();
@@ -52,21 +71,37 @@ window.onload = function(event) {
         }
     })
 
-    let listCheckbox = ol.children;
-
-    console.log(listCheckbox); //
-
-    ol.addEventListener('click', function(event, handler) {
+    ol.addEventListener('click', function(event) {
         let elem = event.toElement.checked;
-        if(event.target.type == 'checkbox' && event.toElement.checked) {
-            let span = event.target.nextElementSibling;
-            span.classList.add('ready');
-        } else if (event.target.type == 'checkbox' && !event.toElement.checked) {
-            let span = event.target.nextElementSibling;
-            span.classList.remove('ready');
 
+        // console.log(event);
+        // console.log(event.target);
+
+        // if(event.target.type == 'checkbox' && event.toElement.checked) {
+        //     let span = event.target.nextElementSibling;
+        //     span.classList.add('ready');
+        //
+        // } else if (event.target.type == 'checkbox' && !event.toElement.checked) {
+        //     let span = event.target.nextElementSibling;
+        //     span.classList.remove('ready');
+        // }
+        if (event.target.type === 'checkbox') {
+            let span = event.target.nextElementSibling;
+            span.classList.toggle('ready');
+            let ol = document.getElementsByTagName('ol');
+            let listCheckbox = ol.children;
+            // let li = event.target.parentNode;
+            console.log(listCheckbox);
         }
+
+
     });
+
+
+
+
+
+
 
 
 
