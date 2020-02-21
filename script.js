@@ -6,13 +6,13 @@ window.onload = function(event) {
     let ol = document.getElementById('list-not-ready');
     let ul = document.getElementById('list-ready');
 
-    // Список не законченых дел
+    // LocalStorage список дел
     let listNotReady = localStorage.getItem('list-not-ready') ? JSON.parse(localStorage.getItem('list-not-ready')) : [];
     localStorage.setItem('list-not-ready', JSON.stringify(listNotReady));
     let dataNotReady = JSON.parse(localStorage.getItem('list-not-ready'));
 
 
-    // Список законченых дел
+    // localStorage Список законченых дел
     let listReady = localStorage.getItem('list-ready') ? JSON.parse(localStorage.getItem('list-ready')) : [];
     localStorage.setItem('list-ready', JSON.stringify(listReady));
     let dataReady = JSON.parse(localStorage.getItem('list-ready'));
@@ -38,12 +38,21 @@ window.onload = function(event) {
         obj.appendChild(li);
     }
 
+    // генератор Id
     function idDeal()
     {
         return Math.random().toString(36).substr(2,16);
     }
 
-
+    document.addEventListener('keydown', keyboardEvent => {
+        console.log(keyboardEvent.key);
+        if (input.value.trim().length !== 0 && keyboardEvent.code === 'Enter') {
+            listNotReady.push(input.value);
+            localStorage.setItem('list-not-ready', JSON.stringify(listNotReady));
+            createRow(input.value, ol);
+            input.value = '';
+        }
+    });
 
 
     enter.addEventListener('click', event => {
@@ -62,7 +71,7 @@ window.onload = function(event) {
 
     dataReady.forEach(item => {
         createRow(item, ul);
-    })
+    });
 
 
 
@@ -74,65 +83,60 @@ window.onload = function(event) {
         while (ul.firstChild) {
             ul.removeChild(ul.firstChild);
         }
-    })
-
-    ol.addEventListener('click', function(event) {
-
-
-        let ol = document.getElementById('list-not-ready');
-        let listNotReadyAll = ol.childNodes;
-
-        let ul = document.getElementById('list-ready');
-        let listReadyAll = ul.childNodes;
-
-        if (event.target.type === 'checkbox' && event.toElement.checked == true) {
-            let checked = event.target.parentElement;  // li весь
-            let span = event.target.nextElementSibling;
-
-            span.classList.toggle('ready');
-            let ready = document.getElementById('list-ready');
-            let clone = event.target.parentElement;
-            ready.appendChild(clone);
-
-            listNotReady = [];
-            listNotReadyAll.forEach(item => {
-                listNotReady.push(item.lastChild.textContent);
-            })
-            localStorage.setItem('list-not-ready', JSON.stringify(listNotReady));
-
-            listReady = [];
-            listReadyAll.forEach(item => {
-                listReady.push(item.lastChild.textContent);
-            })
-            localStorage.setItem('list-ready', JSON.stringify(listReady));
-
-
-        } else if (event.target.className === 'del') {
-            deleteDo(event);
-        }
-
-
     });
 
 
 
+    ol.addEventListener('click', function(event) {
+        if (event.target.type === 'checkbox' && event.toElement.checked == true) {
+            let ready = document.getElementById('list-ready');
+            let clone = event.target.parentElement;  // получил всю строку => li
+            ready.appendChild(clone);  // перенес в list-ready
+            saveList();
+        } else if (event.target.className === 'del') {
+            deleteDo(event);
+            saveList();
+        }
+    });
+
+
+
+    ul.addEventListener('click', function(event) {
+        if (event.target.type === 'checkbox' && event.toElement.checked === false) {
+            let notReady = document.getElementById('list-not-ready');
+            let clone = event.target.parentElement;
+            notReady.appendChild(clone);
+            saveList();
+        } else if (event.target.className === 'del') {
+            deleteDo(event);
+            saveList();
+        }
+    });
+
     function deleteDo(event) {
-        console.log(this.tagName);
         let del = event.target.parentElement;
         del.remove();
-        let ol = document.getElementById('list-not-ready');
-        let listAll = ol.childNodes;
+    }
+
+    function saveList() {
+
         listNotReady = [];
-        listAll.forEach(item => {
+        let ol = document.getElementById('list-not-ready');
+        let tmpListNotReady = ol.childNodes;
+        tmpListNotReady.forEach(item => {
             listNotReady.push(item.lastChild.textContent);
-        })
+        });
         localStorage.setItem('list-not-ready', JSON.stringify(listNotReady));
+
+        listReady = [];
+        let ul = document.getElementById('list-ready');
+        let tmpListReady = ul.childNodes;
+        tmpListReady.forEach(item => {
+            listReady.push(item.lastChild.textContent);
+        });
+        localStorage.setItem('list-ready', JSON.stringify(listReady));
+
     }
-
-    function saveList(event) {
-
-    }
-
 
 }
 
