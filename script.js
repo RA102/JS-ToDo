@@ -1,3 +1,8 @@
+/*
+* убрать повторы кода
+*
+*
+*/
 window.onload = function(event) {
 
     let clearList = document.getElementById('btn-remove-all');
@@ -5,6 +10,7 @@ window.onload = function(event) {
     let input = document.getElementById('new-todo');
     let ol = document.getElementById('list-not-ready');
     let ul = document.getElementById('list-ready');
+    //let remoteComplite = document.getElementById('btn-remove-completed');
 
     // LocalStorage список дел
     let listNotReady = localStorage.getItem('list-not-ready') ? JSON.parse(localStorage.getItem('list-not-ready')) : [];
@@ -18,7 +24,7 @@ window.onload = function(event) {
     let dataReady = JSON.parse(localStorage.getItem('list-ready'));
 
     // ф-ция Создание строк обоих списков
-    function createRow (value, obj) {
+    function addRow (value) {
         let cross = document.createElement('a');
         cross.setAttribute('href', '#');
         cross.setAttribute('class', 'del')
@@ -26,7 +32,6 @@ window.onload = function(event) {
 
         let checkbox = document.createElement('input');
         checkbox.setAttribute('type', 'checkbox');
-        (obj.tagName === 'UL') ? checkbox.setAttribute('checked', 'checked') : false;
 
         let li = document.createElement('li');
         li.setAttribute('class', 'task');
@@ -35,87 +40,12 @@ window.onload = function(event) {
         li.append(cross);
         li.append(checkbox);
         li.append(span);
-        obj.appendChild(li);
+        return li;
     }
 
-    // генератор Id
-    function idDeal()
-    {
-        return Math.random().toString(36).substr(2,16);
-    }
 
-    document.addEventListener('keydown', keyboardEvent => {
-        console.log(keyboardEvent.key);
-        if (input.value.trim().length !== 0 && keyboardEvent.code === 'Enter') {
-            listNotReady.push(input.value);
-            localStorage.setItem('list-not-ready', JSON.stringify(listNotReady));
-            createRow(input.value, ol);
-            input.value = '';
-        }
-    });
-
-
-    enter.addEventListener('click', event => {
-        event.preventDefault();
-        if (input.value.trim().length !== 0) {
-            listNotReady.push(input.value);
-            localStorage.setItem('list-not-ready', JSON.stringify(listNotReady));
-            createRow(input.value, ol);
-            input.value = '';
-        }
-    });
-
-    dataNotReady.forEach(item => {
-        createRow(item, ol);
-    });
-
-    dataReady.forEach(item => {
-        createRow(item, ul);
-    });
-
-
-
-    clearList.addEventListener('click', function(event) {
-        localStorage.clear();
-        while(ol.firstChild) {
-            ol.removeChild(ol.firstChild);
-        }
-        while (ul.firstChild) {
-            ul.removeChild(ul.firstChild);
-        }
-    });
-
-
-
-    ol.addEventListener('click', function(event) {
-        if (event.target.type === 'checkbox' && event.toElement.checked == true) {
-            let ready = document.getElementById('list-ready');
-            let clone = event.target.parentElement;  // получил всю строку => li
-            ready.appendChild(clone);  // перенес в list-ready
-            saveList();
-        } else if (event.target.className === 'del') {
-            deleteDo(event);
-            saveList();
-        }
-    });
-
-
-
-    ul.addEventListener('click', function(event) {
-        if (event.target.type === 'checkbox' && event.toElement.checked === false) {
-            let notReady = document.getElementById('list-not-ready');
-            let clone = event.target.parentElement;
-            notReady.appendChild(clone);
-            saveList();
-        } else if (event.target.className === 'del') {
-            deleteDo(event);
-            saveList();
-        }
-    });
-
-    function deleteDo(event) {
-        let del = event.target.parentElement;
-        del.remove();
+    function deleteDo(obj) {
+        obj.remove();
     }
 
     function saveList() {
@@ -137,6 +67,102 @@ window.onload = function(event) {
         localStorage.setItem('list-ready', JSON.stringify(listReady));
 
     }
+
+    // генератор Id
+    function idDeal()
+    {
+        return Math.random().toString(36).substr(2,16);
+    }
+
+    document.addEventListener('keydown', keyboardEvent => {
+        /*
+        * FixMe
+        *  повтор блок 1
+        * */
+        if (input.value.trim().length !== 0 && keyboardEvent.code === 'Enter') {
+            listNotReady.push(input.value);
+            localStorage.setItem('list-not-ready', JSON.stringify(listNotReady));
+            ol.appendChild(addRow(input.value));
+            input.value = '';
+        }
+    });
+
+
+    enter.addEventListener('click', event => {
+        event.preventDefault();
+        /*
+        * FixMe
+        *  повтор блок 1
+        * */
+        if (input.value.trim().length !== 0) {
+            listNotReady.push(input.value);
+            localStorage.setItem('list-not-ready', JSON.stringify(listNotReady));
+            ol.appendChild(addRow(input.value));
+            input.value = '';
+        }
+    });
+
+    dataNotReady.forEach(item => {
+        ol.appendChild(addRow(item));
+    });
+
+    dataReady.forEach(item => {
+        ul.appendChild(addRow(item));
+    });
+
+    // галочки в списке выполненых
+    let checkbox = ul.getElementsByTagName('input');
+    [].forEach.call(checkbox, function (element) {
+        element.setAttribute('checked', 'checked');
+    });
+
+
+
+    clearList.addEventListener('click', function(event) {
+        localStorage.clear();
+        while(ol.firstChild) {
+            ol.removeChild(ol.firstChild);
+        }
+        while (ul.firstChild) {
+            ul.removeChild(ul.firstChild);
+        }
+    });
+
+
+
+    ol.addEventListener('click', function(event) {
+        if (event.target.type === 'checkbox' && event.toElement.checked == true) {
+            let clone = event.target.parentElement;  // получил всю строку => li
+            ul.appendChild(clone);  // перенес в list-ready
+            saveList();
+        } else if (event.target.className === 'del') {
+            let del = event.target.parentElement;
+            deleteDo(del);
+            saveList();
+        }
+    });
+
+
+
+    ul.addEventListener('click', function(event) {
+        if (event.target.type === 'checkbox' && event.toElement.checked === false) {
+            let clone = event.target.parentElement; // получил li
+            ol.appendChild(clone); // перенос в
+            saveList();
+        } else if (event.target.className === 'del') {
+            let del = event.target.parentElement;
+            deleteDo(del);
+            saveList();
+        }
+    });
+
+    document.getElementById('btn-remove-completed').onclick = function() {
+        localStorage.removeItem('list-ready');
+        while (ul.firstChild) {
+            ul.removeChild(ul.firstChild);
+        }
+    }
+
 
 }
 
